@@ -2,98 +2,144 @@
 
 import React, { useEffect, useState } from "react";
 
-const que = [
+// we can give types
+type questionFormat = {
+  id: number;
+  que: string;
+  ans: {
+    a: string;
+    b: string;
+    c: string;
+    d: string;
+  };
+  correct: string;
+};
+
+const que: questionFormat[] = [
   {
     id: 1,
     que: " what is ur name ?",
     ans: {
-        a :"Kishan",
-        b :"kamal",
-        c : "abhisek",
-        d : "bawa" 
+      a: "Kishan",
+      b: "kamal",
+      c: "abhisek",
+      d: "bawa",
     },
-    correct : "kishan"
+
+    correct: "a",
   },
   {
     id: 2,
     que: " friend ?",
     ans: {
-        a :"Kishan",
-        b :"kamal",
-        c : "abhisek",
-        d : "bawa" 
+      a: "Kishan",
+      b: "kamal",
+      c: "abhisek",
+      d: "bawa",
     },
-    correct : "kamal"
-
+    correct: "b",
   },
   {
     id: 3,
     que: " what is ur color ?",
     ans: {
-        a :"Kishan",
-        b :"kamal",
-        c : "abhisek",
-        d : "bawa" 
+      a: "Kishan",
+      b: "kallu",
+      c: "abhisek",
+      d: "bawa",
     },
-    correct : "kallu"
-
+    correct: "b",
   },
   {
     id: 4,
     que: " what is ur alternative name ?",
     ans: {
-        a :"Kishan",
-        b :"kamal",
-        c : "abhisek",
-        d : "bawa" 
+      a: "Kishan",
+      b: "kamal",
+      c: "abhisek",
+      d: "bawa",
     },
-    correct : "bawa"
-
+    correct: "d",
   },
 ];
 
 function page() {
   const [current, setcurrent] = useState(0);
-  const nextClick = () => {
-    if (current != que.length - 1) {
-      setcurrent(current + 1);
-    } else setcurrent(0);
+  // for total marks 
+  const [total, settotal] = useState(0);
+
+  // handler to sum the answer
+  const AnswerHandler = (key: string) => {
+    // for correct answer plus 1
+    if (key === que[current].correct) {
+      settotal((prev) => prev + 1);
+    }
   };
-  console.log(que.length);
+  console.log("total :" + total);
+
+  const nextClick = () => {
+    if (current < que.length - 1) {
+      setcurrent(current + 1);
+    } else {
+      setcurrent(0)
+      alert(total)
+      settotal(0)
+    };
+  };
   return (
     <div className=" flex justify-center items-center h-screen ">
       <div className=" bg-white h-[36rem] w-[36rem]">
         <h1 className=" text-black text-3xl">Quiz Application</h1>
         <hr className=" border-2 border-red-600" />
 
-        <Question que={que} current={current} />
+        <Question que={que[current]} answerClick={AnswerHandler} />
 
         {/* buttons to change the questions */}
-        <button className=" bg-slate-600 p-2 rounded-md " onClick={nextClick}>
+        <button className=" bg-slate-400 p-2 rounded-md " onClick={nextClick}>
           next
         </button>
       </div>
+      <h1 className=" text-black"> {`total marks are -: ${total}`}</h1>
     </div>
   );
 }
 
 export default page;
 
-function Question({ que, current }: any) {
+interface Question {
+  que: questionFormat;
+  answerClick: (key: string) => void;
+}
+
+function Question({ que, answerClick }: any) {
+  const [answerSelected, setanswerSelected] = useState<string | null>(null);
+
+  const AnswerHandler = (key: string) => {
+    answerClick(key);
+    setanswerSelected(key);
+  };
+  useEffect(() => {
+    setanswerSelected(null);
+  }, [que.id]);
+
   return (
     <div className=" text-black">
-      {que[current].que}
+      {que.que}
       <br />
-      a: {que[current].ans.a}
-      <br />
-      b: {que[current].ans.b}
-      <br />
-      c: {que[current].ans.c}
-      <br />
-      d: {que[current].ans.d}
-      {/* {
-        que[current].ans.map((i)=><div>{console.log(i)}</div>)
-      } */}
+
+      {Object.entries(que.ans).map(([key, value]) => (
+        <div
+          key={key}
+          onClick={() => AnswerHandler(key)}
+          className={`${
+            answerSelected === key ? "bg-slate-300" : ""
+          } cursor-pointer mb-1 hover:bg-slate-300`}
+        >{`${key} : ${value}`}</div>
+      ))}
     </div>
   );
 }
+
+
+// comment down what else we can add 
+// will add those functionality later ...
